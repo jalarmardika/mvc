@@ -1,0 +1,17 @@
+{
+    "name": "jalar/belajar-php-mvc",
+    "description": "Belajar PHP MVC",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Jalar Mardika",
+            "email": "jalarmardika@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "App\\": "app"
+        }
+    } 
+}
