@@ -1,7 +1,8 @@
 <?php 
 namespace App\Core;
 
-use mysqli;
+use Mysqli;
+use Exception;
 
 class Model {
 	private $host = DB_HOST,
@@ -14,7 +15,14 @@ class Model {
 
 	public function __construct()
 	{
-		$this->conn = new mysqli($this->host, $this->user, $this->pass, $this->dbname);
+		try {
+			$this->conn = new Mysqli($this->host, $this->user, $this->pass, $this->dbname);
+			if ($this->conn->connect_error) {
+				throw new Exception("Database Connection Failed " . $this->conn->connect_error);
+			}
+		} catch (Exception $e) {
+			die($e->getMessage());
+		}
 	}
 	
 	public function select(array $columns)
@@ -27,6 +35,7 @@ class Model {
 	}
 	public function where($column, $value, $condition = "=")
 	{
+		$value = "'" . $value . "'";
 		if (str_contains($this->query, "WHERE")) {
 			$this->query .= " AND {$column} {$condition} {$value}";
 		} else {
@@ -40,29 +49,25 @@ class Model {
 		$this->query .= " ORDER BY {$column} {$direction}";
 		return $this;
 	}
-	public function count()
-	{
-		# code...
-	}
-	public function getQuery()
-	{
-		return $this->query;
-	}
 	private function execute()
 	{
 		$query = $this->conn->query($this->query);
 		return $query;
 	}
-	public function find(int $id)
+	public function find(int $id): array
 	{
 		$this->query = "SELECT * FROM {$this->table} WHERE id = '$id'";
 
 		$execute = $this->execute();
-
 		if (gettype($execute) == "object") {
-			return $execute->fetch_assoc();
+			if ($execute->num_rows > 0) {
+				return $execute->fetch_assoc();
+			} else {
+				http_response_code(404);
+				exit;
+			}
 		} else {
-			die("Error Query Database");
+			die("A query error occurred");
 		}
 	}
 	public function get(): array
@@ -80,13 +85,13 @@ class Model {
 			}
 			return $result;
 		} else {
-			die("Error Query Database");
+			die("A query error occurred");
 		}
 	}
-	public function insert(array $data = []): bool
+	public function insert(array $data): void
 	{
 		if (empty($data)) {
-			return false;
+			die("Empty data, failed to save data");
 		}
 
 		$column = [];
@@ -100,12 +105,15 @@ class Model {
 
 		$this->query = "INSERT INTO {$this->table} ($column) VALUES ($value)";
 
-		return $this->execute();
+		$execute = $this->execute();
+		if (!$execute) {
+			die("A query error occurred, failed to save data");
+		}
 	}
-	public function update(array $data = []): bool
+	public function update(array $data): void
 	{
 		if (empty($data)) {
-			return false;
+			die("Empty data, failed to update data");
 		}
 
 		$columnValue = [];
@@ -115,22 +123,28 @@ class Model {
 		$columnValue = implode(",", $columnValue);
 
 		if (!str_contains($this->query, "WHERE")) {
-			// update data harus ada WHERE nya
-			return false;
+			// update data harus ada kondisinya nya
+			die("Update data must have conditions");
 		} else {
 			$this->query = "UPDATE {$this->table} SET {$columnValue}" . $this->query;
 		}
 
-		return $this->execute();
+		$execute = $this->execute();
+		if (!$execute) {
+			die("A query error occurred, failed to update data");
+		}
 	}
-	public function delete(): bool
+	public function delete(): void
 	{
 		if (!str_contains($this->query, "WHERE")) {
-			return false;
+			die("Delete data must have conditions");
 		} else {
 			$this->query = "DELETE FROM {$this->table}" . $this->query;
 		}
 
-		return $this->execute();
+		$execute = $this->execute();
+		if (!$execute) {
+			die("A query error occurred, failed to delete data");
+		}
 	}
 }

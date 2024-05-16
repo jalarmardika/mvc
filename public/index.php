@@ -5,6 +5,8 @@ require_once '../app/config/config.php';
 use App\Core\Route;
 use App\Controllers\ProductController;
 
+if( !session_id() ) session_start();
+
 Route::get('/product', [ProductController::class, 'index']);
 Route::get('/product/create', [ProductController::class, 'create']);
 Route::post('/product', [ProductController::class, 'store']);

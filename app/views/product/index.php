@@ -1,3 +1,6 @@
+<?php 
+use App\Core\Message;
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,6 +8,10 @@
 </head>
 <body>
 	<h1>Data Products</h1>
+	<?php 
+	if (Message::has('success')) { ?>
+		<p><?php Message::flash('success'); ?></p>
+	<?php } ?>
 	<a href="<?= BASEURL; ?>/product/create">Add Product</a>
 	<table border="1">
 		<thead>

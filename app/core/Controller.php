@@ -12,8 +12,7 @@ class Controller {
 
 	public function redirect($path)
 	{
-		$path = trim($path, "/");
-		header("location:" . BASEURL . "/" . $path);
+		header("location:" . BASEURL . $path);
 		exit;
 	}
 }

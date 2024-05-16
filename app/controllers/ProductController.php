@@ -1,10 +1,11 @@
 <?php 
 namespace App\Controllers;
 
-use App\Core\Controller;
+use App\Core\{Controller, Message};
 use App\Models\Product;
 
 class ProductController extends Controller {
+
 	private $product;
 
 	public function __construct()
@@ -13,8 +14,9 @@ class ProductController extends Controller {
 	}
 	public function index()
 	{
+		$data = $this->product->orderBy("id", "desc")->get();
 		$this->view('product/index', [
-			"products" => $this->product->orderBy("id", "desc")->get()
+			"products" => $data
 		]);
 	}
 	public function show($id)
@@ -35,11 +37,10 @@ class ProductController extends Controller {
 			"description" => $_POST['description']
 		];
 
-		if ($this->product->insert($data)) {
-			$this->redirect("/product");
-		} else {
-			echo "gagal simpan";
-		}	
+		$this->product->insert($data);
+
+		Message::setFlash('success', 'Data Saved Successfully');
+		$this->redirect("/product");
 	}
 	public function edit($id)
 	{
@@ -56,18 +57,17 @@ class ProductController extends Controller {
 			"description" => $_POST['description']
 		];
 
-		if ($this->product->where("id", $id)->update($data)) {
-			$this->redirect("/product");
-		} else {
-			echo "gagal update";
-		}
+		$this->product->where("id", $id)->update($data);
+
+		Message::setFlash('success', 'Data Updated Successfully');
+		$this->redirect("/product");
 	}
 	public function delete($id)
 	{
-		if ($this->product->where("id", $id)->delete()) {
-			$this->redirect("/product");
-		} else {
-			echo "gagal hapus";
-		}
+		$this->product->where("id", $id)->delete();
+
+		Message::setFlash('success', 'Data Deleted Successfully');
+		$this->redirect("/product");
 	}
+
 }
