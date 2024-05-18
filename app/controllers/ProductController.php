@@ -14,20 +14,44 @@ class ProductController extends Controller {
 	}
 	public function index()
 	{
-		$data = $this->product->orderBy("id", "desc")->get();
+		if (isset($_POST['keyword'])) {
+			$keyword = $_POST['keyword'];
+			$data = $this->product->where("name", "%".$keyword."%", "like")
+								->orWhere("price", "%".$keyword."%", "like")
+								->orWhere("description", "%".$keyword."%", "like")
+								->orderBy("id", "desc")
+								->get();
+		} else {
+			$data = $this->product->orderBy("id", "desc")->get();
+		}
+
+		$this->view('template/header', [
+			"title" => "Data Products"
+		]);
 		$this->view('product/index', [
 			"products" => $data
 		]);
+		$this->view('template/footer');
 	}
 	public function show($id)
 	{
-		$this->view('product/detail', [
-			"product" => $this->product->find($id)
+		$product = $this->product->find($id);
+
+		$this->view('template/header', [
+			"title" => "Detail Product"
 		]);
+		$this->view('product/detail', [
+			"product" => $product
+		]);
+		$this->view('template/footer');
 	}
 	public function create()
 	{
-		$this->view('product/create', ['title' => "Add Product"]);
+		$this->view('template/header', [
+			"title" => "Add Product"
+		]);
+		$this->view('product/create');
+		$this->view('template/footer');
 	}
 	public function store()
 	{
@@ -44,10 +68,15 @@ class ProductController extends Controller {
 	}
 	public function edit($id)
 	{
-		$this->view('product/edit', [
-			"title" => "Edit Product",
-			"product" => $this->product->find($id)
+		$product = $this->product->find($id);
+
+		$this->view('template/header', [
+			"title" => "Edit Product"
 		]);
+		$this->view('product/edit', [
+			"product" => $product
+		]);
+		$this->view('template/footer');
 	}
 	public function update($id)
 	{
