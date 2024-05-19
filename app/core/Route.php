@@ -39,7 +39,8 @@ class Route
 			if ($countPath === $countURL) {
 				$same = true;
 				for ($i=0; $i < $countPath; $i++) { 
-					if (str_contains($path[$i], '{') && str_contains($path[$i], '}')) {
+					$lastIndex = strlen($path[$i]) - 1;
+					if ( $path[$i][0] == "{" && $path[$i][$lastIndex] == "}" ) {
 						array_push(self::$parameter, $url[$i]);
 					} else {
 						if ($path[$i] != $url[$i]) {

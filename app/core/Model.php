@@ -121,37 +121,35 @@ class Model {
 	{
 		if (empty($data)) {
 			die("Empty data, failed to update data");
-		}
-
-		$columnValue = [];
-		foreach ($data as $key => $value) {
-			$value = filter_var($value, FILTER_SANITIZE_SPECIAL_CHARS);
-			array_push($columnValue, "$key='$value'");
-		}
-
-		$columnValue = implode(",", $columnValue);
-
-		if (!str_contains($this->query, "WHERE")) {
+		} elseif (!str_contains($this->query, "WHERE")) {
 			// update data harus ada kondisinya nya
 			die("Update data must have conditions");
 		} else {
-			$this->query = "UPDATE {$this->table} SET {$columnValue}" . $this->query;
-		}
+			$columnValue = [];
+			foreach ($data as $key => $value) {
+				$value = filter_var($value, FILTER_SANITIZE_SPECIAL_CHARS);
+				array_push($columnValue, "$key='$value'");
+			}
 
-		$execute = $this->execute();
-		if (!$execute) {
-			die("A query error occurred, failed to update data");
+			$columnValue = implode(",", $columnValue);
+
+			$this->query = "UPDATE {$this->table} SET {$columnValue}" . $this->query;
+			$execute = $this->execute();
+
+			if (!$execute) {
+				die("A query error occurred, failed to update data");
+			}
 		}
 	}
 	public function delete(): void
 	{
 		if (!str_contains($this->query, "WHERE")) {
 			die("Delete data must have conditions");
-		} else {
-			$this->query = "DELETE FROM {$this->table}" . $this->query;
 		}
-
+		
+		$this->query = "DELETE FROM {$this->table}" . $this->query;
 		$execute = $this->execute();
+
 		if (!$execute) {
 			die("A query error occurred, failed to delete data");
 		}

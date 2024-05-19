@@ -22,7 +22,7 @@ use App\Core\Message;
 				<div class="col-md-6">
 					<form action="<?= BASEURL ?>/product/search" method="post">
 						<div class="input-group my-3">
-						  <input type="text" name="keyword" class="form-control" placeholder="Search here..." aria-label="Recipient's username" aria-describedby="button-addon2">
+						  <input type="text" name="keyword" class="form-control" placeholder="Search here..." aria-describedby="button-addon2">
 						  <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
 						</div>
 					</form>
